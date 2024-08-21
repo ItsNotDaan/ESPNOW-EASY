@@ -130,6 +130,7 @@ void pairingProcessMaster()
 
     // Turn LED to GREEN indicate pairing mode
     RGB_LED(true, 0, 255, 0);
+    
 
     // Set pairing mode to false.
     pairingMode = false;

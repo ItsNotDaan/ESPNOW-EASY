@@ -1,10 +1,16 @@
 #include <Arduino.h>
-#include <LED_Functions.h>
+#include <FastLED.h>
 #include <ESPNOW-EASY.h>
 
+// INIT the Button
 #define BUTTON_PIN 6
-
 bool buttonState = LOW;
+
+// INIT the LED
+#define DATA_PIN 5
+#define NUM_LEDS 1
+#define LED_TYPE WS2812B
+CRGB leds[NUM_LEDS];
 
 // Device type (MASTER or SLAVE)
 #define DEVICE_TYPE MASTER

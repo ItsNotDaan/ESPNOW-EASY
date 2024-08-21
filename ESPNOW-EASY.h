@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <LED_Functions.h>
+#include <FastLED.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <esp_now.h>
