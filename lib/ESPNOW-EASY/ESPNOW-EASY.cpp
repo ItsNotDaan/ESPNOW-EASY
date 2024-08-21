@@ -1,4 +1,4 @@
-#include <Pairing_Functions.h>
+#include <ESPNOW-EASY.h>
 
 // Global variable to store the slave's and masters MAC address
 uint8_t MasterMacAddress[6] = {0};

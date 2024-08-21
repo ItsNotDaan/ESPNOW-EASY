@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <LED_Functions.h>
-#include <Pairing_Functions.h>
+#include <ESPNOW-EASY.h>
 
 #define BUTTON_PIN 6
 
