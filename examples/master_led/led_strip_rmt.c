@@ -258,7 +258,7 @@ void led_strip_set_pixel_hsv(led_strip_t *strip, uint16_t index, uint16_t h, uin
     }
 
     uint8_t r, g, b;
-    hsv_to_rgb(h, s, v);
+    hsv_to_rgb(h, s, v, &r, &g, &b);
     led_strip_set_pixel(strip, index, r, g, b);
 }
 
