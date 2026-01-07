@@ -1,0 +1,55 @@
+menu "ESP-NOW Easy Configuration"
+
+    config ESPNOW_EASY_MAX_SLAVES
+        int "Maximum number of slaves"
+        default 10
+        range 1 20
+        help
+            Maximum number of slave devices that can be paired with one master.
+            ESP32 supports up to 20 total peers (including broadcast).
+
+    config ESPNOW_EASY_CHANNEL
+        int "ESP-NOW WiFi Channel"
+        default 1
+        range 1 14
+        help
+            WiFi channel to use for ESP-NOW communication.
+            All devices must be on the same channel.
+
+    config ESPNOW_EASY_ENABLE_ENCRYPTION
+        bool "Enable ESP-NOW encryption"
+        default n
+        help
+            Enable encryption for ESP-NOW communication.
+            When enabled, all devices must use the same PMK and LMK.
+
+    config ESPNOW_EASY_PMK
+        string "Primary Master Key (PMK)"
+        depends on ESPNOW_EASY_ENABLE_ENCRYPTION
+        default "pmk1234567890123"
+        help
+            Primary Master Key for ESP-NOW encryption (16 bytes).
+
+    config ESPNOW_EASY_LMK
+        string "Local Master Key (LMK)"
+        depends on ESPNOW_EASY_ENABLE_ENCRYPTION
+        default "lmk1234567890123"
+        help
+            Local Master Key for ESP-NOW encryption (16 bytes).
+
+    config ESPNOW_EASY_PAIRING_TIMEOUT_MS
+        int "Pairing timeout in milliseconds"
+        default 5000
+        range 1000 60000
+        help
+            Time to wait for pairing response before timeout.
+
+    config ESPNOW_EASY_SLAVE_TIMEOUT_US
+        int "Slave activity timeout in microseconds"
+        default 30000000
+        range 5000000 300000000
+        help
+            Time of inactivity before a slave is considered inactive.
+            Default: 30000000 us (30 seconds)
+
+endmenu
