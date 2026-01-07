@@ -21,6 +21,7 @@ typedef struct {
     rmt_encoder_handle_t encoder;
     uint16_t num_leds;
     rgb_t *leds;
+    uint8_t *grb_buffer;  // Pre-allocated GRB buffer for refresh
 } led_strip_t;
 
 /**

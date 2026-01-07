@@ -196,6 +196,15 @@ led_strip_t* led_strip_init(uint32_t gpio_num, uint16_t num_leds)
         return NULL;
     }
 
+    // Pre-allocate GRB buffer for refresh operations
+    strip->grb_buffer = malloc(num_leds * 3);
+    if (!strip->grb_buffer) {
+        ESP_LOGE(TAG, "Failed to allocate GRB buffer");
+        free(strip->leds);
+        free(strip);
+        return NULL;
+    }
+
     // Configure RMT TX channel
     rmt_tx_channel_config_t tx_chan_config = {
         .clk_src = RMT_CLK_SRC_DEFAULT,
@@ -210,6 +219,7 @@ led_strip_t* led_strip_init(uint32_t gpio_num, uint16_t num_leds)
     esp_err_t ret = rmt_new_tx_channel(&tx_chan_config, &strip->channel);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to create RMT TX channel: %s", esp_err_to_name(ret));
+        free(strip->grb_buffer);
         free(strip->leds);
         free(strip);
         return NULL;
@@ -220,6 +230,7 @@ led_strip_t* led_strip_init(uint32_t gpio_num, uint16_t num_leds)
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to create LED strip encoder: %s", esp_err_to_name(ret));
         rmt_del_channel(strip->channel);
+        free(strip->grb_buffer);
         free(strip->leds);
         free(strip);
         return NULL;
@@ -231,6 +242,7 @@ led_strip_t* led_strip_init(uint32_t gpio_num, uint16_t num_leds)
         ESP_LOGE(TAG, "Failed to enable RMT channel: %s", esp_err_to_name(ret));
         rmt_del_encoder(strip->encoder);
         rmt_del_channel(strip->channel);
+        free(strip->grb_buffer);
         free(strip->leds);
         free(strip);
         return NULL;
@@ -277,27 +289,19 @@ bool led_strip_refresh(led_strip_t *strip)
         return false;
     }
 
-    // For WS2812B, the order is GRB not RGB
-    uint8_t *grb_data = malloc(strip->num_leds * 3);
-    if (!grb_data) {
-        ESP_LOGE(TAG, "Failed to allocate GRB buffer");
-        return false;
-    }
-
+    // Use pre-allocated GRB buffer - For WS2812B, the order is GRB not RGB
     for (uint16_t i = 0; i < strip->num_leds; i++) {
-        grb_data[i * 3 + 0] = strip->leds[i].g;
-        grb_data[i * 3 + 1] = strip->leds[i].r;
-        grb_data[i * 3 + 2] = strip->leds[i].b;
+        strip->grb_buffer[i * 3 + 0] = strip->leds[i].g;
+        strip->grb_buffer[i * 3 + 1] = strip->leds[i].r;
+        strip->grb_buffer[i * 3 + 2] = strip->leds[i].b;
     }
 
     rmt_transmit_config_t tx_config = {
         .loop_count = 0,
     };
 
-    esp_err_t ret = rmt_transmit(strip->channel, strip->encoder, grb_data, 
+    esp_err_t ret = rmt_transmit(strip->channel, strip->encoder, strip->grb_buffer, 
                                  strip->num_leds * 3, &tx_config);
-    
-    free(grb_data);
 
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to transmit LED data: %s", esp_err_to_name(ret));
@@ -331,6 +335,10 @@ void led_strip_free(led_strip_t *strip)
 
     if (strip->leds) {
         free(strip->leds);
+    }
+
+    if (strip->grb_buffer) {
+        free(strip->grb_buffer);
     }
 
     free(strip);
