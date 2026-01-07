@@ -1,0 +1,20 @@
+# Build artifacts
+build/
+sdkconfig
+sdkconfig.old
+*.pyc
+__pycache__/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+dependencies/
+managed_components/
+
+# Logs
+*.log
